@@ -1,0 +1,5 @@
+venv/
+tests
+CHANGELOG.md
+.gitpod.yml
+__pycache__/
