@@ -1,0 +1,11 @@
+tasks:
+  - name: VIKTOR
+    init: |
+      curl -Lo viktor-cli 'https://sys.viktor.ai/api/v1/get-cli/?platform=linux&format=binary'
+      chmod +x viktor-cli
+      mv viktor-cli /workspace/viktor-cli
+    command: |
+      echo "export PATH=\$PATH:/workspace" >> ~/.bashrc
+      source ~/.bashrc
+
+
