@@ -34,7 +34,7 @@ class Controller(ViktorController):
         pal_812 = [80 + bx, 120 + by]
         pal_1012 = [100 + bx, 120 + by]
 
-        # Container size
+        # Containers size
         bins20 = [(235, 590)] # 20' container
         bins40 = [(235, 1203)] # 40' container
         # https://www.dsv.com/fr-fr/nos-solutions/modes-de-transport/fret-maritime/dimensions-de-conteneurs-maritimes/dry-container
@@ -59,6 +59,8 @@ class Controller(ViktorController):
                 color = '--r'
 
             plt.plot([x1,x2,x3,x4,x5],[y1,y2,y3,y4,y5], color)
+        
+        plt.axis('equal')
 
 
         svg_data = StringIO()

@@ -9,15 +9,10 @@ import matplotlib.pyplot as plt
 # Function Solver
 def solver(n_812, n_1012, bins):
 
-    # Pallets Count
-    #-- 80 x 120 cm
-    bx = 0
-    by = 0
+    # Pallet Dimensions
+    bx = 5 # buffer x
+    by = 5 # buffer y
     pal_812 = [80 + bx, 120 + by]
-
-    #-- 100 x 120 cm
-    bx = 0
-    by = 0
     pal_1012 = [100 + bx, 120 + by]
 
     # Pallets to load
