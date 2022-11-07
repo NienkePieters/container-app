@@ -42,8 +42,10 @@ class Controller(ViktorController):
 
         if params.bin_type == "20'":
             bin_type = bins20
+            plt.plot([0,235,235,0,0],[0,0,590,590,0])
         else:
             bin_type = bins40
+            plt.plot([0,235,235,0,0],[0,0,1203,1203,0])
 
         all_rects, all_pals = solver(params.n_812, params.n_1012, bin_type)
         # Loop all rect
@@ -60,6 +62,8 @@ class Controller(ViktorController):
 
             plt.plot([x1,x2,x3,x4,x5],[y1,y2,y3,y4,y5], color)
         
+
+
         plt.axis('equal')
 
 
