@@ -11,22 +11,24 @@ import rectpack.packer as packer
 import matplotlib.pyplot as plt
 
 class Parametrization(ViktorParametrization):
-    title = Text('# Container loading optimization model')
+    title = Text('# Container Loading Optimization')
 
-    n_812 = IntegerField('How many 80 x 120 cm pallets?')
+    n_812 = IntegerField('How many 80 x 120 cm pallets?', default=1, step=1, min=0, max=25, flex=90)
 
-    n_1012 = IntegerField('How many 100 x 120 cm pallets?')
+    n_1012 = IntegerField('How many 100 x 120 cm pallets?', default=1, step=1, min=0, max=25, flex=90)
 
-    bin_type = OptionField('What type of container?', options=["20'", "40'"], default="20'")
+    bin_type = OptionField('What type of container to fill?', options=["20'", "40'"], default="20'", flex=90)
 
 class Controller(ViktorController):
     label = 'My Entity Type'
-    parametrization = Parametrization
+    parametrization = Parametrization(width=25)
 
     @SVGView("container", duration_guess=1)
     def create_svg_result(self, params, **kwargs):
+        '''This function creates the output view plotting the pallets and container.'''
+
         #initialize figure
-        fig = plt.figure(figsize = (10,10))
+        fig = plt.figure(figsize = (4,12))
 
         # Pallet Dimensions
         bx = 5 # buffer x
@@ -42,10 +44,10 @@ class Controller(ViktorController):
 
         if params.bin_type == "20'":
             bin_type = bins20
-            plt.plot([0,235,235,0,0],[0,0,590,590,0])
+            plt.plot([0,235,235,0,0],[0,0,590,590,0], linewidth = 2.5 )
         else:
             bin_type = bins40
-            plt.plot([0,235,235,0,0],[0,0,1203,1203,0])
+            plt.plot([0,235,235,0,0],[0,0,1203,1203,0], linewidth = 2.5)
 
         all_rects, all_pals = solver(params.n_812, params.n_1012, bin_type)
         # Loop all rect
@@ -55,18 +57,19 @@ class Controller(ViktorController):
             y1, y2, y3, y4, y5 = y, y, y+h, y+h,y
 
             # Pallet type
-            if [w, h] == pal_812:
+            if [w, h] == pal_812 or [h, w] == pal_812:
                 color = '--k'
             else:
                 color = '--r'
 
-            plt.plot([x1,x2,x3,x4,x5],[y1,y2,y3,y4,y5], color)
+            plt.plot([x1,x2,x3,x4,x5],[y1,y2,y3,y4,y5], color, linewidth = 2)
         
+        plt.ylim([-50,1250])
+        plt.xlim([-50,285])
+        #plt.axis('equal')
+        fig.tight_layout()
 
-
-        plt.axis('equal')
-
-
+        #save figure
         svg_data = StringIO()
         fig.savefig(svg_data, format='svg')
         plt.close()
