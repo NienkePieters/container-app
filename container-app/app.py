@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 class Parametrization(ViktorParametrization):
     title = Text('# Container loading optimization model')
 
-    n_812 = IntegerField('How many 80 x 120 (cm) pallets?')
+    n_812 = IntegerField('How many 80 x 120 cm pallets?')
 
-    n_1012 = IntegerField('How many 100 x 120 (cm) pallets?')
+    n_1012 = IntegerField('How many 100 x 120 cm pallets?')
 
     bin_type = OptionField('What type of container?', options=["20'", "40'"], default="20'")
 
@@ -28,15 +28,15 @@ class Controller(ViktorController):
         #initialize figure
         fig = plt.figure(figsize = (10,10))
 
-        # Pallets Count
-        #-- 80 x 120 cm
-        bx = 0
-        by = 0
+        # Pallet Dimensions
+        bx = 5 # buffer x
+        by = 5 # buffer y
         pal_812 = [80 + bx, 120 + by]
+        pal_1012 = [100 + bx, 120 + by]
 
         # Container size
-        bins20 = [(236, 595)]
-        bins40 = [(236, 1203.396)]
+        bins20 = [(235, 590)] # 20' container
+        bins40 = [(235, 1203)] # 40' container
         # https://www.dsv.com/fr-fr/nos-solutions/modes-de-transport/fret-maritime/dimensions-de-conteneurs-maritimes/dry-container
         # https://www.icontainers.com/help/how-many-pallets-fit-in-a-container/
 
