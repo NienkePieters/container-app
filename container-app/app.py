@@ -1,6 +1,8 @@
 from viktor.core import ViktorController
+from viktor.geometry import SquareBeam, Group, Material
 from viktor.parametrization import ViktorParametrization, Text, IntegerField, OptionField, DynamicArray
-from viktor.views import SVGView, SVGResult
+from viktor.views import SVGView, SVGResult, GeometryResult, GeometryView
+from viktor import Color
 from io import StringIO
 from matplotlib.patches import Rectangle
 
@@ -10,6 +12,7 @@ import numpy as np
 from rectpack import newPacker
 import rectpack.packer as packer
 import matplotlib.pyplot as plt
+import random
 
 class Parametrization(ViktorParametrization):
     title = Text('# Container Loading Optimization')
@@ -23,9 +26,9 @@ class Parametrization(ViktorParametrization):
 
 
 class Controller(ViktorController):
-    label = 'My Entity Type'
+    label = 'My Container'
     parametrization = Parametrization(width=35)
-
+        
     @SVGView("container", duration_guess=1)
     def create_svg_result(self, params, **kwargs):
         '''This function creates the output view plotting the pallets and container.'''
@@ -81,8 +84,6 @@ class Controller(ViktorController):
         # Loop all rect
         for rect in all_rects:
             b, x, y, w, h, rid = rect
-            #x1, x2, x3, x4, x5 = x, x+w, x+w, x, x
-            #y1, y2, y3, y4, y5 = y, y, y+h, y+h,y
             # Pallet type colours. If included also add color in plot below.
             if [w, h] == pal_128 or [h, w] == pal_128:
                 color = 'pink'
@@ -97,10 +98,7 @@ class Controller(ViktorController):
             if [w, h] == pal_65 or [h, w] == pal_65:
                 color = 'purple'
             plt.gca().add_patch(Rectangle((x,y),w,h, facecolor = color, edgecolor='k', fill=True, lw=2))
-            #plt.plot([x1,x2,x3,x4,x5],[y1,y2,y3,y4,y5], color, linewidth = 2)
         
-        #plt.ylim([-50,1250])
-        #plt.xlim([-50,285])
         plt.axis('equal')
         plt.axis('off')
         fig.tight_layout()
@@ -111,3 +109,86 @@ class Controller(ViktorController):
         plt.close()
 
         return SVGResult(svg_data)
+
+    @GeometryView("3D container", duration_guess=1)
+    def visualize_container(self, params, **kwargs):
+        
+        #generate container
+        length_x = 2.35
+        length_z = 2.6
+        if params.bin_type == "20'":
+            length_y=5.90
+            bin_type = [(235, 590)]
+        else:
+            length_y=12.03
+            bin_type = [(235, 1203)]
+        container = SquareBeam(length_x, length_y, length_z)
+        container.material = Material('iron', threejs_opacity=0.5)
+        container.translate([(length_x/2),(length_y/2),(length_z/2)])
+
+        # Set Pallet Dimensions
+        bx = 5 # buffer x
+        by = 5 # buffer y
+
+        pal_128 = [120 + bx, 80 + by]
+        pal_68 = [60 + bx, 80 + by]
+        pal_64 = [60 + bx, 40 + by]
+        pal_1210 = [120 + bx, 100 + by]
+        pal_610 = [60 + bx, 100 + by]
+        pal_65 = [60 + bx, 50 + by]
+
+        # How many of each pallet type is selected
+        n_128, n_68, n_64, n_1210, n_610, n_65 = 0, 0, 0, 0, 0, 0
+
+        for pallet in params.array:
+            if pallet.pallet_dim == '120 x 80 cm: Standard Euro Pallet':
+                n_128 += pallet.pallet_quantity
+            if pallet.pallet_dim == '60 x 80 cm: Half Euro Pallet':
+                n_68 += pallet.pallet_quantity
+            if pallet.pallet_dim == '60 x 40 cm: Display Pallet':
+                n_64 += pallet.pallet_quantity
+            if pallet.pallet_dim == '120 x 100 cm: Standard Block Pallet':
+                n_1210 += pallet.pallet_quantity
+            if pallet.pallet_dim == '60 x 100 cm: Half Block Pallet':
+                n_610 += pallet.pallet_quantity
+            if pallet.pallet_dim == '60 x 50 cm: HST mini-pallet':
+                n_65 += pallet.pallet_quantity
+
+        #all_rects, all_pals = solver(params.n_812, params.n_1012, bin_type)
+        all_rects, all_pals = solver(n_128, n_68, n_64, n_1210, n_610, n_65, bin_type)
+
+        pallets = []
+        for i, pallet in enumerate(all_rects):
+            b, x, y, w, h, rid = pallet
+            length_x = w/100
+            length_y = h/100
+            length_z = random.uniform(1,2) #random pallet heights
+
+            #create pallet
+            pallet_box = SquareBeam(length_x=length_x-0.1, length_y=length_y-0.1, length_z=length_z) #add 0.1 loose space between pallets
+
+            #move pallet to right location (defining the center of the pallet)
+            pallet_box.translate([(x/100+0.5*length_x),(y/100+0.5*length_y),(0.5*length_z)])
+            
+            #set Material
+            if [w, h] == pal_128 or [h, w] == pal_128:
+                color = Color(227,119,194) #pink
+            elif [w, h] == pal_68 or [h, w] == pal_68:
+                color = Color(140,86,75) #brown
+            elif [w, h] == pal_64 or [h, w] == pal_64:
+                color = Color(188,189,34) #olive
+            elif [w, h] == pal_1210 or [h, w] == pal_1210:
+                color = Color(255,127,14) #orange
+            elif [w, h] == pal_610 or [h, w] == pal_610:
+                color = Color(31,119,180) # blue
+            elif [w, h] == pal_65 or [h, w] == pal_65:
+                color = Color(148,103,189) #purple
+            pallet_box.material = Material('plastic', color=color)
+
+            #add to pallet list
+            pallets.append(pallet_box)
+        pallets = Group(pallets)
+
+        container_system = Group([container, pallets])
+                
+        return GeometryResult(container_system)
