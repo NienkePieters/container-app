@@ -6,3 +6,4 @@ You can select the type of container and the typea/quantity of pallets; the algo
 The sea carries more than 80 percent of the world’s traded goods, most of which sail inside 40-foot-long steel containers. Optimising the load in each container can reduce CO2 emissions!
 
 
+![](https://github.com/NienkePieters/container-app/container_app_shorter_cropped.gif)
