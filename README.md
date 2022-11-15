@@ -14,12 +14,3 @@ To use the app:
   - Execute the install command, to install the app and its dependencies: "viktor-cli install"
   - After installation, start the app: "viktor-cli start"
 4. Open the app in your browser by visiting (Ctrl+click) the URL shown in the command-line shell: cloud.viktor.ai
-5. Log in with your username and password, you will be redirected to the app's homepage.
-
-
-
-
-
-Also see the VIKTOR documentation 
-
-
