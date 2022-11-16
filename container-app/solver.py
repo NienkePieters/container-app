@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 # Function Solver
 def solver(n_128, n_68, n_64, n_1210, n_610, n_65, bins):
-    ''' For optimizing how pallets should be placed in the container. The inputs are the number of 80x120cm pallets, 100x120cm pallets and container size.'''
+    ''' For optimizing how pallets should be placed in the container. The inputs are the quantities of each pallet type and the container size.'''
 
     # Set Pallet Buffer
     bx = 5 # buffer x
